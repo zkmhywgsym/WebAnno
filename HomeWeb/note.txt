@@ -1,0 +1,7 @@
+配置文件：
+web.xml在WEB-INF文件夹下
+applicationContext.xml 在resource文件夹下
+struts.xml 在resource文件夹下
+log4j.xml 在resource文件夹下
+database.xml 在resource文件夹下
+config.xml 在resource文件夹下

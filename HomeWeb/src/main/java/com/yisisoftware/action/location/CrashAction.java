@@ -1,0 +1,84 @@
+package com.yisisoftware.action.location;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+import com.alibaba.fastjson.JSON;
+import com.yisisoftware.action.base.BaseAction;
+import com.yisisoftware.entity.Crash;
+import com.yisisoftware.service.base.ICrashServiceI;
+
+@SuppressWarnings("serial")
+@Controller
+public class CrashAction extends BaseAction {
+	@Autowired
+	private ICrashServiceI crashService;
+	private File crashFile;
+
+	public void saveCrash() {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		boolean flag = false;
+		String msg = "";
+		String filearr=getRequest().getParameter("crashFile");
+		byte[] file=(filearr==null?null:filearr.getBytes());
+		try {
+//			if (!crashFile.exists()) {
+//				map.put("result", flag);
+//				map.put("msg", "文件上传失败");
+//				writeJson(map);
+//				return;
+//			}
+			System.out.println("crashFile:"+file);
+			if(file==null){
+				map.put("result", flag);
+				map.put("msg", "文件上传失败");
+				writeJson(map);
+				return;
+			}
+			BufferedReader reader=new BufferedReader(new FileReader(crashFile));
+			String line="";
+			StringBuffer sb=new StringBuffer();
+			while ((line=reader.readLine())!=null) {
+				sb.append(line);
+			}
+			reader.close();
+			//TODO 保存日志
+			String json=sb.toString();
+			Crash crash=JSON.parseObject(json,Crash.class);
+			System.out.println("file content:"+sb.toString());
+			crashService.saveOrUpdate(crash);
+		} catch (Exception e) {
+			e.printStackTrace();
+			msg = "保存失败！";
+		} finally {
+			map.put("result", flag);
+			map.put("msg", msg);
+			writeJson(map);
+		}
+	}
+
+	public File getCrashFile() {
+		return crashFile;
+	}
+
+	public void setCrashFile(File crashFile) {
+		this.crashFile = crashFile;
+	}
+
+
+
+
+
+	
+}
